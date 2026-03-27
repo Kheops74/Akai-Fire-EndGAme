@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Akai Fire EndGAme EN</title>
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --bg-soft: #fffaf2;
+      --paper: rgba(255, 252, 247, 0.92);
+      --ink: #181511;
+      --muted: #63594c;
+      --line: rgba(44, 34, 22, 0.12);
+      --accent: #d84f1a;
+      --accent-2: #ffb347;
+      --accent-3: #0f6a62;
+      --accent-4: #1f3c88;
+      --danger: #8b2c1d;
+      --shadow: 0 20px 60px rgba(48, 30, 11, 0.12);
+      --radius: 24px;
+      --max: 1200px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(255, 179, 71, 0.38), transparent 30%),
+        radial-gradient(circle at top right, rgba(15, 106, 98, 0.15), transparent 28%),
+        linear-gradient(180deg, #fbf6ee 0%, #f4efe6 46%, #efe6d9 100%);
+      line-height: 1.55;
+    }
+
+    .shell {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 24px auto 80px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(216, 79, 26, 0.15);
+      border-radius: 32px;
+      padding: 40px;
+      background:
+        linear-gradient(135deg, rgba(255, 249, 240, 0.95), rgba(255, 242, 226, 0.92)),
+        linear-gradient(180deg, rgba(216, 79, 26, 0.06), rgba(15, 106, 98, 0.04));
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -10% -35% auto;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(216, 79, 26, 0.15), transparent 70%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(24, 21, 17, 0.06);
+      color: var(--muted);
+      font-size: 0.84rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 {
+      margin: 0 0 14px;
+      line-height: 1.08;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin-top: 18px;
+      font-size: clamp(2.4rem, 5vw, 4.7rem);
+      max-width: 12ch;
+    }
+
+    .lead {
+      max-width: 70ch;
+      margin: 0;
+      font-size: 1.08rem;
+      color: var(--muted);
+    }
+
+    .hero-grid,
+    .grid-2,
+    .grid-4 {
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero-grid {
+      grid-template-columns: 1.4fr 1fr;
+      margin-top: 28px;
+      align-items: start;
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .recap-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .card,
+    .mini,
+    .section,
+    .callout {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .mini {
+      padding: 18px;
+      min-height: 132px;
+    }
+
+    .mini strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .mini p,
+    .card p,
+    .section p,
+    .callout p,
+    li {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .card {
+      padding: 22px;
+    }
+
+    .recap-card {
+      padding: 22px;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .badge,
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 9px 14px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      text-decoration: none;
+      color: var(--ink);
+      background: rgba(24, 21, 17, 0.05);
+      border: 1px solid rgba(24, 21, 17, 0.08);
+    }
+
+    .badge strong {
+      margin-right: 8px;
+      color: var(--accent);
+    }
+
+    .nav {
+      position: sticky;
+      top: 12px;
+      z-index: 5;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 22px 0 28px;
+      padding: 14px;
+      border-radius: 20px;
+      background: rgba(255, 249, 240, 0.84);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(24, 21, 17, 0.08);
+      box-shadow: 0 12px 40px rgba(48, 30, 11, 0.08);
+    }
+
+    .chip:hover,
+    .chip:focus-visible {
+      background: rgba(216, 79, 26, 0.1);
+      border-color: rgba(216, 79, 26, 0.25);
+      outline: none;
+    }
+
+    .section {
+      margin-top: 28px;
+      padding: 28px;
+    }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    .section-head p {
+      max-width: 72ch;
+    }
+
+    .label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(216, 79, 26, 0.08);
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.88rem;
+    }
+
+    .section-install .label {
+      background: rgba(24, 21, 17, 0.07);
+      color: var(--ink);
+    }
+
+    .section-step .label {
+      background: rgba(216, 79, 26, 0.14);
+      color: #b53d10;
+    }
+
+    .section-note .label {
+      background: rgba(31, 60, 136, 0.14);
+      color: #1f3c88;
+    }
+
+    .section-ctrl .label {
+      background: rgba(15, 106, 98, 0.14);
+      color: #0f6a62;
+    }
+
+    .section-perform .label {
+      background: rgba(139, 44, 29, 0.14);
+      color: #8b2c1d;
+    }
+
+    .section-step th { background: rgba(216, 79, 26, 0.10); }
+    .section-note th { background: rgba(31, 60, 136, 0.10); }
+    .section-ctrl th { background: rgba(15, 106, 98, 0.10); }
+    .section-perform th { background: rgba(139, 44, 29, 0.10); }
+
+    .recap-step { border-top: 6px solid #d84f1a; }
+    .recap-note { border-top: 6px solid #1f3c88; }
+    .recap-ctrl { border-top: 6px solid #0f6a62; }
+    .recap-perform { border-top: 6px solid #8b2c1d; }
+
+    .recap-step th { background: rgba(216, 79, 26, 0.12); }
+    .recap-note th { background: rgba(31, 60, 136, 0.12); }
+    .recap-ctrl th { background: rgba(15, 106, 98, 0.12); }
+    .recap-perform th { background: rgba(139, 44, 29, 0.12); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.78);
+    }
+
+    th,
+    td {
+      padding: 14px 16px;
+      vertical-align: top;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+    }
+
+    th {
+      background: rgba(24, 21, 17, 0.04);
+      font-size: 0.92rem;
+      color: var(--ink);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .subgrid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    ul {
+      padding-left: 18px;
+      margin: 12px 0 0;
+    }
+
+    li + li {
+      margin-top: 8px;
+    }
+
+    kbd {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 8px;
+      background: #f2e6d5;
+      border: 1px solid rgba(24, 21, 17, 0.12);
+      font-family: inherit;
+      font-size: 0.92em;
+      color: var(--ink);
+      box-shadow: inset 0 -1px 0 rgba(24, 21, 17, 0.08);
+    }
+
+    .callout {
+      margin-top: 18px;
+      padding: 20px 22px;
+    }
+
+    .callout strong {
+      color: var(--danger);
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .accent-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .accent-strip span {
+      height: 8px;
+      border-radius: 999px;
+    }
+
+    .accent-strip span:nth-child(1) { background: var(--accent); }
+    .accent-strip span:nth-child(2) { background: var(--accent-2); }
+    .accent-strip span:nth-child(3) { background: var(--accent-3); }
+    .accent-strip span:nth-child(4) { background: var(--accent-4); }
+
+    footer {
+      margin-top: 36px;
+      padding: 24px 0 8px;
+      color: var(--muted);
+      font-size: 0.94rem;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .grid-4,
+      .grid-2,
+      .subgrid,
+      .recap-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero,
+      .section {
+        padding: 24px;
+      }
+
+      th,
+      td {
+        padding: 12px;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .shell {
+        width: 100%;
+        margin: 0;
+      }
+
+      .nav {
+        position: static;
+        background: transparent;
+        box-shadow: none;
+        border: 1px solid var(--line);
+      }
+
+      .hero,
+      .section,
+      .card,
+      .mini,
+      .callout,
+      .recap-card {
+        box-shadow: none;
+        background: white;
+      }
+
+      .recap-grid {
+        grid-template-columns: 1fr;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="hero" id="top">
+      <span class="eyebrow">User guide EN</span>
+      <h1>Akai Fire EndGAme</h1>
+      <p class="lead">
+        A full Akai Fire redesign for FL Studio with four major modes:
+        <strong>STEP</strong>, <strong>NOTE</strong>, <strong>CTRL FL</strong> and <strong>PERFORM</strong>.
+        This page mirrors the French guide in a clean layout, ready for screen reading or PDF export.
+      </p>
+
+      <div class="hero-grid">
+        <div class="grid-4">
+          <article class="mini">
+            <strong>STEP</strong>
+            <p>Classic 1x64 sequencer plus vertical MONO, POLY and POLY CHORD modes.</p>
+          </article>
+          <article class="mini">
+            <strong>NOTE</strong>
+            <p>Chromatic keyboard with 4 visible octaves and automatic chord mode.</p>
+          </article>
+          <article class="mini">
+            <strong>CTRL FL</strong>
+            <p>Direct FL Studio control for mixer, channel rack, playlist and piano roll.</p>
+          </article>
+          <article class="mini">
+            <strong>PERFORM</strong>
+            <p>Live sync mode for mute, relaunch and pattern switching.</p>
+          </article>
+        </div>
+
+      </div>
+      <div class="accent-strip" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </header>
+
+    <nav class="nav" aria-label="Navigation">
+      <a class="chip" href="#install">Installation</a>
+      <a class="chip" href="#step">STEP Mode</a>
+      <a class="chip" href="#note">NOTE Mode</a>
+      <a class="chip" href="#ctrl">CTRL FL Mode</a>
+      <a class="chip" href="#perform">PERFORM Mode</a>
+      <a class="chip" href="#limitations">Limitations</a>
+      <a class="chip" href="#summary">Quick Summary</a>
+    </nav>
+
+    <section class="section section-install" id="install">
+      <div class="section-head">
+        <div>
+          <span class="label">Installation</span>
+          <h2>Step-by-step setup</h2>
+        </div>
+        <p>
+          This section completes the quick setup with the missing details that actually matter:
+          the correct folder, the helper tools, the MIDI checks, and the key things to verify if something fails.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <article class="card">
+          <h3>Folder and expected content</h3>
+          <ul>
+            <li>Typical path: <strong>C:\Users\YourName\Documents\Image-Line\FL Studio\Settings\Hardware</strong></li>
+            <li>Depending on your setup, it may also be inside the FL Studio data folder.</li>
+            <li>The folder must contain <strong>device_Fire.py</strong> and the <strong>fire_modules</strong> subfolder.</li>
+            <li>If FL Studio cannot see the script, the first thing to check is simply the folder location.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>Tools and purpose</h3>
+          <ul>
+            <li><strong>AkaiFireWatcher.exe</strong>: required for the project, and should be launched before FL Studio.</li>
+            <li><strong>FLControlEditor.exe</strong>: used to configure custom CTRL FL shortcuts.</li>
+            <li><strong>color_picker_to_0x.html</strong>: helper page for choosing pad color values.</li>
+            <li>You can create <strong>desktop shortcuts</strong> for these tools to launch them faster.</li>
+          </ul>
+        </article>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Step</th>
+            <th>Action</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Copy the <strong>Akai Fire EndGAme</strong> folder</td>
+            <td>The folder must be placed inside the FL Studio Hardware scripts folder.</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Create desktop shortcuts</td>
+            <td>Inside the main folder and <strong>fire_modules</strong>, create shortcuts for <strong>AkaiFireWatcher.exe</strong>, <strong>FLControlEditor.exe</strong>, and <strong>color_picker_to_0x.html</strong>.</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Launch <strong>AkaiFireWatcher.exe</strong></td>
+            <td>The watcher must already be active before opening FL Studio.</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Power on the Akai Fire</td>
+            <td>Wait for full initialization before moving on.</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Launch FL Studio</td>
+            <td>Then open MIDI settings to complete the setup.</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>Select the MIDI script</td>
+            <td>Choose <strong>Akai Fire EndGAme</strong> as the Fire script.</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>Set the MIDI ports</td>
+            <td>Use exactly the same port number for input and output.</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>Verify operation</td>
+            <td>Test STEP, NOTE, CTRL FL, and PERFORM to confirm everything responds correctly.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>Tip</strong>
+        <p>
+          If the script does not react correctly, check the install folder first,
+          then the selected MIDI script, then the MIDI port, then the launch order: watcher, Fire, FL Studio.
+        </p>
+      </div>
+    </section>
+
+    <section class="section section-step" id="step">
+      <div class="section-head">
+        <div>
+          <span class="label">STEP Mode</span>
+          <h2>The sequencer reinvented</h2>
+        </div>
+        <p>
+          STEP mode gives you four different ways to work. The first one keeps the original Fire spirit,
+          while the other three switch to a true vertical sequencing concept.
+        </p>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Sub-mode</th>
+            <th>Shortcut</th>
+            <th>Concept</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>STEP 1 - Classic</strong></td>
+            <td><kbd>SHIFT</kbd> + <kbd>STEP</kbd></td>
+            <td>
+              A redesigned version of the original mode. It uses a <strong>1 x 64 step</strong> layout instead of 4 x 16.
+              You control one selected channel rack lane over 64 visible steps.
+            </td>
+          </tr>
+          <tr>
+            <td><strong>STEP 2 - Vertical MONO</strong></td>
+            <td><kbd>STEP</kbd></td>
+            <td>
+              The 64-pad matrix shows <strong>4 steps</strong> of the sequencer across <strong>16 note heights</strong>.
+              One note per step.
+            </td>
+          </tr>
+          <tr>
+            <td><strong>STEP 3 - Vertical POLY</strong></td>
+            <td><kbd>ALT</kbd> + <kbd>STEP</kbd></td>
+            <td>
+              Same vertical concept as MONO, but you can freely add multiple notes on the same step.
+            </td>
+          </tr>
+          <tr>
+            <td><strong>STEP 4 - Vertical POLY CHORDS</strong></td>
+            <td><kbd>ALT</kbd> + <kbd>SHIFT</kbd> + <kbd>STEP</kbd></td>
+            <td>
+              Same vertical grid, but the chord selected with <kbd>BROWSER</kbd> is automatically added when you place a note.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="subgrid">
+        <article class="card">
+          <h3>Navigation inside the grid</h3>
+          <ul>
+            <li><kbd>SELECT</kbd> moves the visible window <strong>4 steps at a time</strong>.</li>
+            <li><kbd>PATTERN -</kbd> and <kbd>PATTERN +</kbd> move <strong>one step at a time</strong>.</li>
+            <li>The first knob shifts the visible pitch range.</li>
+            <li>With multiple synced Fire units, you can display <strong>8 steps</strong> or <strong>16 steps</strong> at once.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>EDIT mode</h3>
+          <ul>
+            <li>Press <kbd>STEP</kbd> again and the button blinks to enter <strong>EDIT</strong> mode.</li>
+            <li>You can select one or more notes in the grid.</li>
+            <li><strong>Knob 1</strong> controls pitch.</li>
+            <li><strong>Knob 2</strong> controls velocity.</li>
+            <li><strong>Knob 3</strong> controls note length.</li>
+            <li><strong>Knob 4</strong> controls timing offset.</li>
+            <li><kbd>MUTE 1</kbd> to <kbd>MUTE 4</kbd> mute the 4 visible steps.</li>
+          </ul>
+        </article>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Command</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><kbd>BROWSER</kbd></td>
+            <td>Opens the chord selection mode, useful in STEP 4 and NOTE chord mode.</td>
+          </tr>
+          <tr>
+            <td><kbd>SELECT</kbd> while already in vertical STEP</td>
+            <td>Syncs the internal grid back to FL Studio.</td>
+          </tr>
+          <tr>
+            <td><kbd>ALT</kbd> + press <kbd>SELECT</kbd></td>
+            <td>Exports the sequence as both <strong>MIDI</strong> and <strong>JSON</strong>.</td>
+          </tr>
+          <tr>
+            <td><kbd>SHIFT</kbd> + press <kbd>SELECT</kbd></td>
+            <td>Reloads a saved sequence from disk.</td>
+          </tr>
+          <tr>
+            <td><kbd>Selector</kbd></td>
+            <td>Cycles quickly through STEP 1, STEP 2, STEP 3 and STEP 4.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>Multi-Fire</strong>
+        <p>
+          Multi-device sync is mainly intended for the vertical STEP modes.
+          The idea is to split the visible steps across several Fire units to show a larger sequence area.
+        </p>
+      </div>
+    </section>
+
+    <section class="section section-note" id="note">
+      <div class="section-head">
+        <div>
+          <span class="label">NOTE Mode</span>
+          <h2>The keyboard with automatic chords</h2>
+        </div>
+        <p>
+          NOTE mode turns the pad matrix into a chromatic keyboard with four visible octaves.
+          It can also play full chords directly.
+        </p>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Sub-mode</th>
+            <th>Shortcut</th>
+            <th>Concept</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Classic NOTE</strong></td>
+            <td><kbd>NOTE</kbd></td>
+            <td>
+              A chromatic keyboard with 4 visible octaves.
+              White and black notes are arranged in sequence on each row.
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Chord NOTE</strong></td>
+            <td>Press <kbd>SELECT</kbd></td>
+            <td>
+              The keyboard plays the selected chord directly instead of a single note.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="grid-2">
+        <article class="card">
+          <h3>Useful commands</h3>
+          <ul>
+            <li><kbd>PATTERN -</kbd> and <kbd>PATTERN +</kbd> change the 4 visible octaves.</li>
+            <li><kbd>BROWSER</kbd> opens chord selection.</li>
+            <li><kbd>SELECT</kbd> changes the selected instrument or channel.</li>
+            <li>Press <kbd>SELECT</kbd> again to enable or disable chord mode.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>Chord selection</h3>
+          <ul>
+            <li><kbd>BROWSER</kbd> enters chord selection mode.</li>
+            <li>Turning <kbd>SELECT</kbd> scrolls through chord types.</li>
+            <li>The chord name scrolls directly on the pad matrix.</li>
+            <li><kbd>BROWSER</kbd> closes the mode and returns to the previous one.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section section-ctrl" id="ctrl">
+      <div class="section-head">
+        <div>
+          <span class="label">CTRL FL Mode</span>
+          <h2>The Fire becomes a dedicated FL Studio controller</h2>
+        </div>
+        <p>
+          Each pad becomes a shortcut or direct action inside FL Studio.
+          The goal is to control the mixer, channel rack, playlist and piano roll quickly without relying on the mouse.
+        </p>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Area</th>
+            <th>Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Row 1</strong></td>
+            <td>Select mixer tracks or channel rack channels. <kbd>SHIFT</kbd> + pad mutes the target.</td>
+          </tr>
+          <tr>
+            <td><strong>Row 2</strong></td>
+            <td>Pattern selection.</td>
+          </tr>
+          <tr>
+            <td><strong>Row 3</strong></td>
+            <td>Playlist shortcuts, plus fixed keys such as <strong>Escape</strong>, <strong>Up</strong> and <strong>Enter</strong>.</td>
+          </tr>
+          <tr>
+            <td><strong>Row 4</strong></td>
+            <td>Piano roll shortcuts, plus <strong>Left</strong>, <strong>Down</strong> and <strong>Right</strong> arrows.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Command</th>
+            <th>Function</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><kbd>MUTE 1</kbd></td>
+            <td>Switches the first row to <strong>Mixer</strong> view, then toggles between pages 1-16 and 17-32.</td>
+          </tr>
+          <tr>
+            <td><kbd>MUTE 2</kbd></td>
+            <td>Switches the first row to <strong>Channel Rack</strong> view, then toggles between pages 1-16 and 17-32.</td>
+          </tr>
+          <tr>
+            <td><kbd>MUTE 3</kbd></td>
+            <td>Toggles playlist shortcuts between page A and page B.</td>
+          </tr>
+          <tr>
+            <td><kbd>MUTE 4</kbd></td>
+            <td>Toggles piano roll shortcuts between page A and page B.</td>
+          </tr>
+          <tr>
+            <td>Double press on a Channel Rack pad</td>
+            <td>Opens the channel editor.</td>
+          </tr>
+          <tr>
+            <td>Touch <kbd>KNOB 1</kbd>, <kbd>2</kbd>, <kbd>3</kbd>, <kbd>4</kbd></td>
+            <td>Opens <strong>Channel Rack</strong>, <strong>Piano Roll</strong>, <strong>Mixer</strong> and <strong>Playlist</strong> respectively.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="grid-2">
+        <article class="card">
+          <h3>Customization</h3>
+          <ul>
+            <li>The shortcut pads are fully configurable.</li>
+            <li>You can define the key, modifiers, label and color for each pad.</li>
+            <li><strong>FLControlEditor.exe</strong> is made for configuring everything cleanly.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>What it brings</h3>
+          <ul>
+            <li>Direct access to playlist tools.</li>
+            <li>Direct access to piano roll tools.</li>
+            <li>Fast navigation through FL Studio windows.</li>
+            <li>A much more immediate physical workflow than the original Fire behavior.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section section-perform" id="perform">
+      <div class="section-head">
+        <div>
+          <span class="label">PERFORM Mode</span>
+          <h2>The live sync engine</h2>
+        </div>
+        <p>
+          This mode does not use FL Studio’s native performance mode.
+          It acts as its own live system, able to mute, relaunch or switch patterns in sync.
+        </p>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Selection</th>
+            <th>Controlled source</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><kbd>MUTE 1</kbd></td>
+            <td>Mixer</td>
+          </tr>
+          <tr>
+            <td><kbd>MUTE 2</kbd></td>
+            <td>Channel Rack</td>
+          </tr>
+          <tr>
+            <td><kbd>MUTE 3</kbd></td>
+            <td>Playlist</td>
+          </tr>
+          <tr>
+            <td><kbd>MUTE 4</kbd></td>
+            <td>Patterns</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Situation</th>
+            <th>Behavior</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>FL Studio is <strong>stopped</strong></td>
+            <td>The action happens immediately.</td>
+          </tr>
+          <tr>
+            <td>FL Studio is <strong>playing</strong></td>
+            <td>The pad enters a pending state, then the action is applied at the next sync boundary.</td>
+          </tr>
+          <tr>
+            <td><kbd>SHIFT</kbd> + <kbd>PAD</kbd></td>
+            <td>Forces the action immediately without waiting for sync.</td>
+          </tr>
+          <tr>
+            <td><strong>Patterns</strong> mode</td>
+            <td>The current pattern length is detected automatically so switching happens at the correct moment.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="grid-2">
+        <article class="card">
+          <h3>Useful commands</h3>
+          <ul>
+            <li><kbd>SELECT</kbd> chooses the sync length: <strong>1, 2, 4 or 8 bars</strong>.</li>
+            <li>Pressing <kbd>SELECT</kbd> can also rotate through Mixer, Channel Rack, Playlist and Patterns.</li>
+            <li><kbd>SHIFT</kbd> + <kbd>GRID L/R</kbd> changes page by blocks of 64 elements.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>Typical live use</h3>
+          <ul>
+            <li>Queue several mute changes in advance.</li>
+            <li>Launch a variation on the next measure.</li>
+            <li>Switch patterns automatically at the real end of the current pattern.</li>
+            <li>Create live interventions on tracks, channels or patterns.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="limitations">
+      <div class="section-head">
+        <div>
+          <span class="label">Limitations</span>
+          <h2>What to know about vertical STEP mode</h2>
+        </div>
+        <p>
+          The vertical sequencer cannot be displayed inside FL Studio exactly as it appears on the Fire.
+          This is a limitation of the piano roll API.
+        </p>
+      </div>
+
+      <div class="callout">
+        <strong>Main limitation</strong>
+        <p>
+          In FL Studio, notes remain visible like simple steps.
+          In vertical POLY or POLY CHORD STEP modes, several notes may be played on the Fire,
+          but FL often only shows the lowest note of the step.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <article class="card">
+          <h3>Result</h3>
+          <ul>
+            <li>On the Fire, you still see and hear the real chords.</li>
+            <li>Inside FL, you do not always see every note that is actually being played.</li>
+            <li>The piano roll often behaves as if it were only showing a simple channel rack step.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>Built-in solution</h3>
+          <ul>
+            <li><kbd>ALT</kbd> + press <kbd>SELECT</kbd> exports the sequence as a MIDI file.</li>
+            <li><kbd>SHIFT</kbd> + press <kbd>SELECT</kbd> reloads an existing sequence.</li>
+            <li>This lets you recover the real sequence in FL Studio and edit it afterward.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section section-install" id="summary">
+      <div class="section-head">
+        <div>
+          <span class="label">Quick Summary</span>
+          <h2>4 simple print-friendly tables</h2>
+        </div>
+        <p>
+          This ending section is meant to be a clear reminder sheet:
+          one table per mode, with only the most useful commands.
+        </p>
+      </div>
+
+      <div class="recap-grid">
+        <article class="card recap-card recap-step">
+          <h3>STEP</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Function</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>SHIFT</kbd> + <kbd>STEP</kbd></td>
+                <td>STEP 1 classic 1 x 64 mode.</td>
+              </tr>
+              <tr>
+                <td><kbd>STEP</kbd></td>
+                <td>STEP 2 vertical MONO, or toggle EDIT when already inside.</td>
+              </tr>
+              <tr>
+                <td><kbd>ALT</kbd> + <kbd>STEP</kbd></td>
+                <td>STEP 3 vertical POLY.</td>
+              </tr>
+              <tr>
+                <td><kbd>ALT</kbd> + <kbd>SHIFT</kbd> + <kbd>STEP</kbd></td>
+                <td>STEP 4 vertical POLY CHORDS.</td>
+              </tr>
+              <tr>
+                <td><kbd>BROWSER</kbd></td>
+                <td>Open chord selection.</td>
+              </tr>
+              <tr>
+                <td><kbd>SELECT</kbd></td>
+                <td>Move the window or sync, depending on the sub-mode.</td>
+              </tr>
+              <tr>
+                <td><kbd>ALT</kbd> + press <kbd>SELECT</kbd></td>
+                <td>Export MIDI + JSON.</td>
+              </tr>
+              <tr>
+                <td><kbd>SHIFT</kbd> + press <kbd>SELECT</kbd></td>
+                <td>Import a saved sequence.</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article class="card recap-card recap-note">
+          <h3>NOTE</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Function</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>NOTE</kbd></td>
+                <td>Enable the chromatic keyboard layout.</td>
+              </tr>
+              <tr>
+                <td><kbd>PATTERN -</kbd> / <kbd>PATTERN +</kbd></td>
+                <td>Change the 4 visible octaves.</td>
+              </tr>
+              <tr>
+                <td>Press <kbd>SELECT</kbd></td>
+                <td>Enable or disable chord mode.</td>
+              </tr>
+              <tr>
+                <td><kbd>BROWSER</kbd></td>
+                <td>Open or close chord selection.</td>
+              </tr>
+              <tr>
+                <td><kbd>SELECT</kbd> rotation</td>
+                <td>Change the played channel or instrument.</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article class="card recap-card recap-ctrl">
+          <h3>CTRL FL</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Function</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>MUTE 1</kbd></td>
+                <td>Row 1 in Mixer mode, then pages 1-16 / 17-32.</td>
+              </tr>
+              <tr>
+                <td><kbd>MUTE 2</kbd></td>
+                <td>Row 1 in Channel Rack mode, then pages 1-16 / 17-32.</td>
+              </tr>
+              <tr>
+                <td><kbd>MUTE 3</kbd></td>
+                <td>Playlist shortcuts page A.<br>Page B USER shortcuts</td>
+              </tr>
+              <tr>
+                <td><kbd>MUTE 4</kbd></td>
+                <td>Piano Roll shortcuts page A.<br>Page B USER shortcuts</td>
+              </tr>
+              <tr>
+                <td><kbd>SHIFT</kbd> + row 1 pad</td>
+                <td>Mute the targeted mixer track or channel.</td>
+              </tr>
+              <tr>
+                <td>Touch <kbd>KNOB 1</kbd> to <kbd>4</kbd></td>
+                <td>Open Channel Rack, Piano Roll, Mixer, Playlist.</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article class="card recap-card recap-perform">
+          <h3>PERFORM</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Function</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>MUTE 1</kbd> to <kbd>4</kbd></td>
+                <td>Select Mixer, Channel Rack, Playlist or Patterns.</td>
+              </tr>
+              <tr>
+                <td><kbd>SELECT</kbd> rotation</td>
+                <td>Choose sync length: 1, 2, 4 or 8 bars.</td>
+              </tr>
+              <tr>
+                <td><kbd>SHIFT</kbd> + <kbd>PAD</kbd></td>
+                <td>Force the action immediately.</td>
+              </tr>
+              <tr>
+                <td><kbd>PAD</kbd> during playback</td>
+                <td>Queue the action until the next sync boundary.</td>
+              </tr>
+              <tr>
+                <td>Patterns mode</td>
+                <td>Wait for the real end of the currently playing pattern.</td>
+              </tr>
+              <tr>
+                <td><kbd>SHIFT</kbd> + <kbd>GRID L/R</kbd></td>
+                <td>Change page by blocks of 64 elements.</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      Akai Fire EndGAme EN • HTML layout for screen reading and PDF export
+    </footer>
+  </div>
+</body>
+</html>

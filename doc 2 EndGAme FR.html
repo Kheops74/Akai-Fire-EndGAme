@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Akai Fire EndGAme FR</title>
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --bg-soft: #fffaf2;
+      --paper: rgba(255, 252, 247, 0.92);
+      --ink: #181511;
+      --muted: #63594c;
+      --line: rgba(44, 34, 22, 0.12);
+      --accent: #d84f1a;
+      --accent-2: #ffb347;
+      --accent-3: #0f6a62;
+      --accent-4: #1f3c88;
+      --danger: #8b2c1d;
+      --shadow: 0 20px 60px rgba(48, 30, 11, 0.12);
+      --radius: 24px;
+      --max: 1200px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(255, 179, 71, 0.38), transparent 30%),
+        radial-gradient(circle at top right, rgba(15, 106, 98, 0.15), transparent 28%),
+        linear-gradient(180deg, #fbf6ee 0%, #f4efe6 46%, #efe6d9 100%);
+      line-height: 1.55;
+    }
+
+    .shell {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 24px auto 80px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(216, 79, 26, 0.15);
+      border-radius: 32px;
+      padding: 40px;
+      background:
+        linear-gradient(135deg, rgba(255, 249, 240, 0.95), rgba(255, 242, 226, 0.92)),
+        linear-gradient(180deg, rgba(216, 79, 26, 0.06), rgba(15, 106, 98, 0.04));
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -10% -35% auto;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(216, 79, 26, 0.15), transparent 70%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(24, 21, 17, 0.06);
+      color: var(--muted);
+      font-size: 0.84rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 {
+      margin: 0 0 14px;
+      line-height: 1.08;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin-top: 18px;
+      font-size: clamp(2.4rem, 5vw, 4.7rem);
+      max-width: 12ch;
+    }
+
+    .lead {
+      max-width: 70ch;
+      margin: 0;
+      font-size: 1.08rem;
+      color: var(--muted);
+    }
+
+    .hero-grid,
+    .summary,
+    .grid-2,
+    .grid-4 {
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero-grid {
+      grid-template-columns: 1.4fr 1fr;
+      margin-top: 28px;
+      align-items: start;
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .recap-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .card,
+    .mini,
+    .section,
+    .callout {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .mini {
+      padding: 18px;
+      min-height: 132px;
+    }
+
+    .mini strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .mini p,
+    .card p,
+    .section p,
+    .callout p,
+    li {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .card {
+      padding: 22px;
+    }
+
+    .recap-card {
+      padding: 22px;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .badge,
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 9px 14px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      text-decoration: none;
+      color: var(--ink);
+      background: rgba(24, 21, 17, 0.05);
+      border: 1px solid rgba(24, 21, 17, 0.08);
+    }
+
+    .badge strong {
+      margin-right: 8px;
+      color: var(--accent);
+    }
+
+    .nav {
+      position: sticky;
+      top: 12px;
+      z-index: 5;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 22px 0 28px;
+      padding: 14px;
+      border-radius: 20px;
+      background: rgba(255, 249, 240, 0.84);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(24, 21, 17, 0.08);
+      box-shadow: 0 12px 40px rgba(48, 30, 11, 0.08);
+    }
+
+    .chip:hover,
+    .chip:focus-visible {
+      background: rgba(216, 79, 26, 0.1);
+      border-color: rgba(216, 79, 26, 0.25);
+      outline: none;
+    }
+
+    .section {
+      margin-top: 28px;
+      padding: 28px;
+    }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    .section-head p {
+      max-width: 72ch;
+    }
+
+    .label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(216, 79, 26, 0.08);
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.88rem;
+    }
+
+    .section-install .label {
+      background: rgba(24, 21, 17, 0.07);
+      color: var(--ink);
+    }
+
+    .section-step .label {
+      background: rgba(216, 79, 26, 0.14);
+      color: #b53d10;
+    }
+
+    .section-note .label {
+      background: rgba(31, 60, 136, 0.14);
+      color: #1f3c88;
+    }
+
+    .section-ctrl .label {
+      background: rgba(15, 106, 98, 0.14);
+      color: #0f6a62;
+    }
+
+    .section-perform .label {
+      background: rgba(139, 44, 29, 0.14);
+      color: #8b2c1d;
+    }
+
+    .section-step th { background: rgba(216, 79, 26, 0.10); }
+    .section-note th { background: rgba(31, 60, 136, 0.10); }
+    .section-ctrl th { background: rgba(15, 106, 98, 0.10); }
+    .section-perform th { background: rgba(139, 44, 29, 0.10); }
+
+    .recap-step { border-top: 6px solid #d84f1a; }
+    .recap-note { border-top: 6px solid #1f3c88; }
+    .recap-ctrl { border-top: 6px solid #0f6a62; }
+    .recap-perform { border-top: 6px solid #8b2c1d; }
+
+    .recap-step th { background: rgba(216, 79, 26, 0.12); }
+    .recap-note th { background: rgba(31, 60, 136, 0.12); }
+    .recap-ctrl th { background: rgba(15, 106, 98, 0.12); }
+    .recap-perform th { background: rgba(139, 44, 29, 0.12); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.78);
+    }
+
+    th,
+    td {
+      padding: 14px 16px;
+      vertical-align: top;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+    }
+
+    th {
+      background: rgba(24, 21, 17, 0.04);
+      font-size: 0.92rem;
+      color: var(--ink);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .subgrid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    ul {
+      padding-left: 18px;
+      margin: 12px 0 0;
+    }
+
+    li + li {
+      margin-top: 8px;
+    }
+
+    kbd {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 8px;
+      background: #f2e6d5;
+      border: 1px solid rgba(24, 21, 17, 0.12);
+      font-family: inherit;
+      font-size: 0.92em;
+      color: var(--ink);
+      box-shadow: inset 0 -1px 0 rgba(24, 21, 17, 0.08);
+    }
+
+    .callout {
+      margin-top: 18px;
+      padding: 20px 22px;
+    }
+
+    .callout strong {
+      color: var(--danger);
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .accent-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .accent-strip span {
+      height: 8px;
+      border-radius: 999px;
+    }
+
+    .accent-strip span:nth-child(1) { background: var(--accent); }
+    .accent-strip span:nth-child(2) { background: var(--accent-2); }
+    .accent-strip span:nth-child(3) { background: var(--accent-3); }
+    .accent-strip span:nth-child(4) { background: var(--accent-4); }
+
+    footer {
+      margin-top: 36px;
+      padding: 24px 0 8px;
+      color: var(--muted);
+      font-size: 0.94rem;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .grid-4,
+      .grid-2,
+      .subgrid,
+      .recap-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero,
+      .section {
+        padding: 24px;
+      }
+
+      th,
+      td {
+        padding: 12px;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .shell {
+        width: 100%;
+        margin: 0;
+      }
+
+      .nav {
+        position: static;
+        background: transparent;
+        box-shadow: none;
+        border: 1px solid var(--line);
+      }
+
+      .hero,
+      .section,
+      .card,
+      .mini,
+      .callout,
+      .recap-card {
+        box-shadow: none;
+        background: white;
+      }
+
+      .recap-grid {
+        grid-template-columns: 1fr;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="hero" id="top">
+      <span class="eyebrow">Guide utilisateur FR</span>
+      <h1>Akai Fire EndGAme</h1>
+      <p class="lead">
+        Refonte complete de l'Akai Fire pour FL Studio avec quatre grands modes repenses :
+        <strong>STEP</strong>, <strong>NOTE</strong>, <strong>CTRL FL</strong> et <strong>PERFORM</strong>.
+        Cette page reprend tes explications, mais dans une mise en page propre, lisible et prete a exporter en PDF.
+      </p>
+
+      <div class="hero-grid">
+        <div class="grid-4">
+          <article class="mini">
+            <strong>STEP</strong>
+            <p>Sequenceur 1x64 classique + sequenceur vertical MONO, POLY et POLY ACCORDS.</p>
+          </article>
+          <article class="mini">
+            <strong>NOTE</strong>
+            <p>Clavier chromatique 4 octaves avec mode accords automatique.</p>
+          </article>
+          <article class="mini">
+            <strong>CTRL FL</strong>
+            <p>Controle direct de FL Studio, mixer, channel rack, playlist et piano roll.</p>
+          </article>
+          <article class="mini">
+            <strong>PERFORM</strong>
+            <p>Mode live synchronise pour mute, relance et changement de patterns.</p>
+          </article>
+        </div>
+
+      </div>
+      <div class="accent-strip" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </header>
+
+    <nav class="nav" aria-label="Navigation">
+      <a class="chip" href="#install">Installation</a>
+      <a class="chip" href="#step">Mode STEP</a>
+      <a class="chip" href="#note">Mode NOTE</a>
+      <a class="chip" href="#ctrl">Mode CTRL FL</a>
+      <a class="chip" href="#perform">Mode PERFORM</a>
+      <a class="chip" href="#limitations">Limitations</a>
+      <a class="chip" href="#rappel">Rappel express</a>
+    </nav>
+
+    <section class="section section-install" id="install">
+      <div class="section-head">
+        <div>
+          <span class="label">Installation</span>
+          <h2>Mise en place pas a pas</h2>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <article class="card">
+          <h3>Dossier et contenu attendu</h3>
+          <ul>
+            <li>Chemin habituel : <strong>C:\Users\VotreNom\Documents\Image-Line\FL Studio\Settings\Hardware</strong></li>
+            <li>Selon l'installation, cela peut aussi etre dans le dossier de donnees FL Studio.</li>
+            <li>Le dossier doit contenir <strong>device_Fire.py</strong> et le sous-dossier <strong>fire_modules</strong>.</li>
+            <li>Si FL ne voit pas le script, le premier point a verifier est simplement le bon emplacement du dossier.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>Outils et utilite</h3>
+          <ul>
+            <li><strong>AkaiFireWatcher.exe</strong> : indispensable au fonctionnement du script, a lancer avant FL Studio.</li>
+            <li><strong>FLControlEditor.exe</strong> : sert a configurer les raccourcis personnalisables du mode CTRL FL.</li>
+            <li><strong>color_picker_to_0x.html</strong> : aide a choisir les couleurs des pads.</li>
+            <li>Tu peux faire des <strong>raccourcis vers le bureau</strong> pour ces outils afin de les lancer plus vite.</li>
+          </ul>
+        </article>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Etape</th>
+            <th>Action</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Watcher</td>
+            <td><strong>AkaiFireWatcher.exe</strong> doit etre lance avant FL Studio.</td>
+            <td>Sinon certaines fonctions de controle et de raccourcis ne repondront pas comme prevu.</td>
+          </tr>
+          <tr>
+            <td>Controleur</td>
+            <td>L'Akai Fire doit etre allume et completement initialise avant le test.</td>
+            <td>Un demarrage incomplet peut donner un script partiellement detecte ou instable.</td>
+          </tr>
+          <tr>
+            <td>Script MIDI</td>
+            <td>Dans les options MIDI, choisir <strong>Akai Fire EndGAme</strong> comme script.</td>
+            <td>Sans le bon script, FL utilisera seulement un comportement MIDI basique.</td>
+          </tr>
+          <tr>
+            <td>Port MIDI</td>
+            <td>Le numero de port doit etre exactement le meme en entree et en sortie.</td>
+            <td>C'est la verification la plus importante si le Fire reagit mal.</td>
+          </tr>
+          <tr>
+            <td>CTRL FL</td>
+            <td><strong>FLControlEditor.exe</strong> est optionnel, mais utile si tu veux adapter tes raccourcis.</td>
+            <td>Le mode CTRL FL est plus interessant une fois personnalise.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>Conseil</strong>
+        <p>
+          Si le script ne reagit pas correctement, verifier d'abord le dossier d'installation,
+          puis le port MIDI, puis l'ordre de lancement : watcher, Fire, FL Studio.
+        </p>
+      </div>
+    </section>
+
+    <section class="section section-step" id="step">
+      <div class="section-head">
+        <div>
+          <span class="label">Mode STEP</span>
+          <h2>Le sequenceur reinvente</h2>
+        </div>
+        <p>
+          Le mode STEP propose quatre facons de travailler. Le premier garde l'esprit du Fire d'origine,
+          alors que les trois autres basculent sur un vrai concept de sequenceur vertical.
+        </p>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Sous-mode</th>
+            <th>Acces</th>
+            <th>Principe</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>STEP 1 - Classique</strong></td>
+            <td><kbd>SHIFT</kbd> + <kbd>STEP</kbd></td>
+            <td>
+              Version revisitée du mode d'origine. On passe sur <strong>1 x 64 pas</strong> au lieu de 4 x 16.
+              On controle un seul channel rack a la fois sur 64 pas visibles.
+            </td>
+          </tr>
+          <tr>
+            <td><strong>STEP 2 - Vertical MONO</strong></td>
+            <td><kbd>STEP</kbd></td>
+            <td>
+              La matrice de 64 pads represente <strong>4 pas</strong> du sequenceur sur <strong>16 hauteurs de notes</strong>.
+              Une seule note par pas.
+            </td>
+          </tr>
+          <tr>
+            <td><strong>STEP 3 - Vertical POLY</strong></td>
+            <td><kbd>ALT</kbd> + <kbd>STEP</kbd></td>
+            <td>
+              Meme principe que le mode MONO, mais tu peux ajouter librement plusieurs notes sur le meme pas.
+            </td>
+          </tr>
+          <tr>
+            <td><strong>STEP 4 - Vertical POLY ACCORDS</strong></td>
+            <td><kbd>ALT</kbd> + <kbd>SHIFT</kbd> + <kbd>STEP</kbd></td>
+            <td>
+              Meme grille verticale, mais l'accord choisi avec <kbd>BROWSER</kbd> est joue automatiquement quand tu poses une note.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="subgrid">
+        <article class="card">
+          <h3>Deplacement dans la grille</h3>
+          <ul>
+            <li><kbd>SELECT</kbd> tourne la fenetre de <strong>4 pas en 4 pas</strong>.</li>
+            <li><kbd>PATTERN -</kbd> et <kbd>PATTERN +</kbd> avancent <strong>pas par pas</strong>.</li>
+            <li>Le premier potentiometre permet de deplacer la zone visible en hauteur.</li>
+            <li>Avec plusieurs Fire synchronises, tu peux voir <strong>8 pas</strong> ou <strong>16 pas</strong> simultanement.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>Mode EDIT</h3>
+          <ul>
+            <li>En appuyant une nouvelle fois sur <kbd>STEP</kbd>, le bouton clignote et le mode <strong>EDIT</strong> s'active.</li>
+            <li>Tu selectionnes une ou plusieurs notes dans la grille.</li>
+            <li><strong>Knob 1</strong> regle le pitch.</li>
+            <li><strong>Knob 2</strong> regle la velocite.</li>
+            <li><strong>Knob 3</strong> regle la longueur.</li>
+            <li><strong>Knob 4</strong> regle le decalage temporel.</li>
+            <li>Les boutons <kbd>MUTE 1</kbd> a <kbd>MUTE 4</kbd> coupent les 4 pas visibles.</li>
+          </ul>
+        </article>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Commande</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><kbd>BROWSER</kbd></td>
+            <td>Ouvre le choix des accords, utile en STEP 4 et aussi en NOTE accords.</td>
+          </tr>
+          <tr>
+            <td><kbd>SELECT</kbd> quand tu es deja dans STEP vertical</td>
+            <td>Synchronise la grille interne avec FL Studio.</td>
+          </tr>
+          <tr>
+            <td><kbd>ALT</kbd> + pression sur <kbd>SELECT</kbd></td>
+            <td>Exporte la sequence en <strong>MIDI</strong> et en <strong>JSON</strong>.</td>
+          </tr>
+          <tr>
+            <td><kbd>SHIFT</kbd> + pression sur <kbd>SELECT</kbd></td>
+            <td>Recharge une sequence depuis les fichiers sauvegardes.</td>
+          </tr>
+          <tr>
+            <td><kbd>SELECTEUR</kbd></td>
+            <td>Fait tourner rapidement STEP 1, STEP 2, STEP 3 et STEP 4.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>Multi-Fire</strong>
+        <p>
+          La synchronisation multi-Akai Fire sert surtout aux modes STEP verticaux.
+          L'idee est de repartir les pas visibles sur plusieurs machines pour afficher une plus grande portion de sequence.
+        </p>
+      </div>
+    </section>
+
+    <section class="section section-note" id="note">
+      <div class="section-head">
+        <div>
+          <span class="label">Mode NOTE</span>
+          <h2>Le clavier avec accords automatiques</h2>
+        </div>
+        <p>
+          Le mode NOTE transforme la matrice en piano chromatique sur quatre octaves visibles.
+          Il peut aussi jouer directement des accords entiers.
+        </p>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Sous-mode</th>
+            <th>Acces</th>
+            <th>Principe</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>NOTE classique</strong></td>
+            <td><kbd>NOTE</kbd></td>
+            <td>
+              Piano chromatique sur 4 octaves visibles.
+              Les notes blanches et noires sont placees a la suite sur chaque rangee.
+            </td>
+          </tr>
+          <tr>
+            <td><strong>NOTE accords</strong></td>
+            <td>Pression sur <kbd>SELECT</kbd></td>
+            <td>
+              Le clavier joue directement l'accord choisi au lieu d'une seule note.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="grid-2">
+        <article class="card">
+          <h3>Commandes utiles</h3>
+          <ul>
+            <li><kbd>PATTERN -</kbd> et <kbd>PATTERN +</kbd> changent les 4 octaves visibles.</li>
+            <li><kbd>BROWSER</kbd> ouvre le choix des accords.</li>
+            <li><kbd>SELECT</kbd> change l'instrument ou le channel selectionne.</li>
+            <li>Une nouvelle pression sur <kbd>SELECT</kbd> active ou coupe le mode accords.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>Choix des accords</h3>
+          <ul>
+            <li><kbd>BROWSER</kbd> entre dans le mode de selection des accords.</li>
+            <li>Tourner <kbd>SELECT</kbd> fait defiler les accords.</li>
+            <li>Le nom de l'accord defile directement sur la matrice des pads.</li>
+            <li><kbd>BROWSER</kbd> referme ce mode et revient au mode precedent.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section section-ctrl" id="ctrl">
+      <div class="section-head">
+        <div>
+          <span class="label">Mode CTRL FL</span>
+          <h2>Le Fire devient une surface de controle FL Studio</h2>
+        </div>
+        <p>
+          Chaque pad devient un raccourci ou une action directe dans FL Studio.
+          Le but est de piloter rapidement le mixer, le channel rack, la playlist et le piano roll sans passer par la souris.
+        </p>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Zone</th>
+            <th>Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Rangee 1</strong></td>
+            <td>Selection des pistes du mixer ou du channel rack. <kbd>SHIFT</kbd> + pad mute la cible.</td>
+          </tr>
+          <tr>
+            <td><strong>Rangee 2</strong></td>
+            <td>Selection des patterns.</td>
+          </tr>
+          <tr>
+            <td><strong>Rangee 3</strong></td>
+            <td>Raccourcis playlist, plus des touches fixes comme <strong>Escape</strong>, <strong>Up</strong> et <strong>Enter</strong>.</td>
+          </tr>
+          <tr>
+            <td><strong>Rangee 4</strong></td>
+            <td>Raccourcis piano roll, plus les fleches <strong>Left</strong>, <strong>Down</strong> et <strong>Right</strong>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Commande</th>
+            <th>Fonction</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><kbd>MUTE 1</kbd></td>
+            <td>Passe la premiere rangee en vue <strong>Mixer</strong>, puis alterne entre les pages 1-16 et 17-32.</td>
+          </tr>
+          <tr>
+            <td><kbd>MUTE 2</kbd></td>
+            <td>Passe la premiere rangee en vue <strong>Channel Rack</strong>, puis alterne entre les pages 1-16 et 17-32.</td>
+          </tr>
+          <tr>
+            <td><kbd>MUTE 3</kbd></td>
+            <td>Bascule les raccourcis playlist entre la page A et la page B.</td>
+          </tr>
+          <tr>
+            <td><kbd>MUTE 4</kbd></td>
+            <td>Bascule les raccourcis piano roll entre la page A et la page B.</td>
+          </tr>
+          <tr>
+            <td>Double pression sur un pad du Channel Rack</td>
+            <td>Ouvre l'editeur du channel.</td>
+          </tr>
+          <tr>
+            <td>Toucher <kbd>KNOB 1</kbd>, <kbd>2</kbd>, <kbd>3</kbd>, <kbd>4</kbd></td>
+            <td>Ouvre respectivement <strong>Channel Rack</strong>, <strong>Piano Roll</strong>, <strong>Mixer</strong> et <strong>Playlist</strong>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="grid-2">
+        <article class="card">
+          <h3>Personnalisation</h3>
+          <ul>
+            <li>Les pads de raccourcis sont configurables.</li>
+            <li>Tu peux choisir la touche, les modificateurs, le label et la couleur de chaque pad.</li>
+            <li><strong>FLControlEditor.exe</strong> est prevu pour faire cette configuration proprement.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>Ce que ca apporte</h3>
+          <ul>
+            <li>Acces direct aux outils de playlist.</li>
+            <li>Acces direct aux outils du piano roll.</li>
+            <li>Navigation rapide dans les fenetres de FL Studio.</li>
+            <li>Controle physique plus immediat qu'avec le comportement d'origine du Fire.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section section-perform" id="perform">
+      <div class="section-head">
+        <div>
+          <span class="label">Mode PERFORM</span>
+          <h2>Le mode live synchronise</h2>
+        </div>
+        <p>
+          Ce mode n'utilise pas le mode performance natif de FL Studio. Il fonctionne comme un systeme live propre au script,
+          capable de muter, relancer ou changer de pattern de facon synchronisee.
+        </p>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Selection</th>
+            <th>Source controlee</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><kbd>MUTE 1</kbd></td>
+            <td>Mixer</td>
+          </tr>
+          <tr>
+            <td><kbd>MUTE 2</kbd></td>
+            <td>Channel Rack</td>
+          </tr>
+          <tr>
+            <td><kbd>MUTE 3</kbd></td>
+            <td>Playlist</td>
+          </tr>
+          <tr>
+            <td><kbd>MUTE 4</kbd></td>
+            <td>Patterns</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Situation</th>
+            <th>Comportement</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>FL Studio sur <strong>STOP</strong></td>
+            <td>L'action part immediatement.</td>
+          </tr>
+          <tr>
+            <td>FL Studio sur <strong>PLAY</strong></td>
+            <td>Le pad clignote en attente puis l'action s'applique a la fin de la synchro choisie.</td>
+          </tr>
+          <tr>
+            <td><kbd>SHIFT</kbd> + <kbd>PAD</kbd></td>
+            <td>Force l'action immediate, sans attendre la fin de la mesure.</td>
+          </tr>
+          <tr>
+            <td>Mode <strong>Patterns</strong></td>
+            <td>La longueur du pattern en cours est detectee automatiquement pour basculer au bon moment.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="grid-2">
+        <article class="card">
+          <h3>Commandes utiles</h3>
+          <ul>
+            <li><kbd>SELECT</kbd> choisit la synchro sur <strong>1, 2, 4 ou 8 mesures</strong>.</li>
+            <li>Une pression sur <kbd>SELECT</kbd> peut aussi faire tourner les sources Mixer, Channel Rack, Playlist et Patterns.</li>
+            <li><kbd>SHIFT</kbd> + <kbd>GRID L/R</kbd> change de page par blocs de 64 elements.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>Usage type</h3>
+          <ul>
+            <li>Preparer plusieurs mutings en attente.</li>
+            <li>Lancer une variation a la prochaine mesure.</li>
+            <li>Basculer de pattern automatiquement a la fin complete du pattern en cours.</li>
+            <li>Creer des interventions live rapides sur les pistes, channels ou patterns.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="limitations">
+      <div class="section-head">
+        <div>
+          <span class="label">Limitations</span>
+          <h2>Ce qu'il faut savoir sur le STEP vertical</h2>
+        </div>
+        <p>
+          Le sequenceur vertical ne peut pas etre affiche dans FL Studio exactement comme il apparait sur le Fire.
+          C'est une limite de l'API cote piano roll.
+        </p>
+      </div>
+
+      <div class="callout">
+        <strong>Limitation principale</strong>
+        <p>
+          Dans FL Studio, les notes restent visibles comme des steps simples.
+          En STEP vertical POLY ou POLY ACCORDS, plusieurs notes peuvent etre jouees sur le Fire,
+          mais FL n'affiche generalement que la note la plus basse du pas.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <article class="card">
+          <h3>Consequence</h3>
+          <ul>
+            <li>Sur le Fire, tu vois et tu entends bien les accords.</li>
+            <li>Dans FL, tu ne vois pas forcement toutes les notes reellement jouees.</li>
+            <li>Le piano roll se comporte souvent comme si tu etais sur un step simple du channel rack.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>Solution integree</h3>
+          <ul>
+            <li><kbd>ALT</kbd> + pression sur <kbd>SELECT</kbd> exporte la sequence en fichier MIDI.</li>
+            <li><kbd>SHIFT</kbd> + pression sur <kbd>SELECT</kbd> recharge une sequence existante.</li>
+            <li>Tu peux ainsi recuperer la vraie sequence dans FL Studio et la retravailler ensuite.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section section-install" id="rappel">
+      <div class="section-head">
+        <div>
+          <span class="label">Rappel express</span>
+          <h2>4 tableaux simples a imprimer</h2>
+        </div>
+        <p>
+          Cette fin de document est pensee comme une fiche de rappel claire :
+          les commandes essentielles des 4 modes, sans explications, juste l'essentiel.
+        </p>
+      </div>
+
+      <div class="recap-grid">
+        <article class="recap-card recap-step">
+          <h3>Mode STEP</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Commande</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>STEP</kbd></td>
+                <td>STEP 2 - Vertical MONO</td>
+              </tr>
+              <tr>
+                <td><kbd>ALT</kbd> + <kbd>STEP</kbd></td>
+                <td>STEP 3 - Vertical POLY</td>
+              </tr>
+              <tr>
+                <td><kbd>SHIFT</kbd> + <kbd>STEP</kbd></td>
+                <td>STEP 1 - Classique</td>
+              </tr>
+              <tr>
+                <td><kbd>ALT</kbd> + <kbd>SHIFT</kbd> + <kbd>STEP</kbd></td>
+                <td>STEP 4 - Vertical POLY ACCORDS</td>
+              </tr>
+              <tr>
+                <td><kbd>STEP</kbd> (depuis STEP)</td>
+                <td>Mode EDIT ON/OFF</td>
+              </tr>
+              <tr>
+                <td><kbd>SELECT</kbd> tourne</td>
+                <td>Avance de 4 pas</td>
+              </tr>
+              <tr>
+                <td><kbd>PATTERN -/+</kbd></td>
+                <td>Avance/recule pas par pas</td>
+              </tr>
+              <tr>
+                <td><kbd>BROWSER</kbd></td>
+                <td>Choix des accords</td>
+              </tr>
+              <tr>
+                <td><kbd>ALT</kbd> + <kbd>SELECT</kbd></td>
+                <td>Export MIDI/JSON</td>
+              </tr>
+              <tr>
+                <td><kbd>SHIFT</kbd> + <kbd>SELECT</kbd></td>
+                <td>Import MIDI/JSON</td>
+              </tr>
+              <tr>
+                <td><kbd>SELECTEUR</kbd></td>
+                <td>Rotation rapide STEP 1/2/3/4</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article class="recap-card recap-note">
+          <h3>Mode NOTE</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Commande</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>NOTE</kbd></td>
+                <td>Mode NOTE classique</td>
+              </tr>
+              <tr>
+                <td><kbd>SELECT</kbd></td>
+                <td>Mode accords ON/OFF</td>
+              </tr>
+              <tr>
+                <td><kbd>SELECT</kbd> tourne</td>
+                <td>Change le channel/instrument</td>
+              </tr>
+              <tr>
+                <td><kbd>PATTERN -/+</kbd></td>
+                <td>Change les 4 octaves visibles</td>
+              </tr>
+              <tr>
+                <td><kbd>BROWSER</kbd></td>
+                <td>Choix des accords</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article class="recap-card recap-ctrl">
+          <h3>Mode CTRL FL</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Commande</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>MUTE 1</kbd></td>
+                <td>Rangee 1 en mode Mixer, puis pages 1-16 / 17-32.</td>
+              </tr>
+              <tr>
+                <td><kbd>MUTE 2</kbd></td>
+                <td>Rangee 1 en mode Channel Rack, puis pages 1-16 / 17-32.</td>
+              </tr>
+              <tr>
+                <td><kbd>MUTE 3</kbd></td>
+                <td>Page A des raccourcis Playlist.<br>Page B raccourcis USER</td>
+              </tr>
+              <tr>
+                <td><kbd>MUTE 4</kbd></td>
+                <td>Page A des raccourcis Piano Roll.<br>Page B raccourcis USER</td>
+              </tr>
+              <tr>
+                <td><kbd>SHIFT</kbd> + pad rangee 1</td>
+                <td>Mute la piste mixer ou le channel vise.</td>
+              </tr>
+              <tr>
+                <td>Toucher <kbd>KNOB 1</kbd> a <kbd>4</kbd></td>
+                <td>Ouvre Channel Rack, Piano Roll, Mixer, Playlist.</td>
+              </tr>
+              <tr>
+                <td>Double pression pad Channel Rack</td>
+                <td>Ouvre l'editeur du channel.</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article class="recap-card recap-perform">
+          <h3>Mode PERFORM</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Commande</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>MUTE 1</kbd></td>
+                <td>Source = Mixer</td>
+              </tr>
+              <tr>
+                <td><kbd>MUTE 2</kbd></td>
+                <td>Source = Channel Rack</td>
+              </tr>
+              <tr>
+                <td><kbd>MUTE 3</kbd></td>
+                <td>Source = Playlist</td>
+              </tr>
+              <tr>
+                <td><kbd>MUTE 4</kbd></td>
+                <td>Source = Patterns</td>
+              </tr>
+              <tr>
+                <td><kbd>SELECT</kbd></td>
+                <td>Synchro 1/2/4/8 mesures + rotation sources</td>
+              </tr>
+              <tr>
+                <td><kbd>SHIFT</kbd> + <kbd>PAD</kbd></td>
+                <td>Action immediate (pas de synchro)</td>
+              </tr>
+              <tr>
+                <td><kbd>SHIFT</kbd> + <kbd>GRID L/R</kbd></td>
+                <td>Page -64 / +64 elements</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <p>&copy; 2026 Akai Fire EndGAme - Guide utilisateur</p>
+    </footer>
+  </div>
+</body>
+</html>
