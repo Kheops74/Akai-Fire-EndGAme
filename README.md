@@ -12,14 +12,15 @@ This project rethinks the Fire around 4 main modes:
 
 - `STEP`: classic `1x64` sequencing plus vertical `MONO`, `POLY`, and `POLY CHORD` modes
 - `NOTE`: chromatic keyboard with optional automatic chord playback
-- `FL Control`: direct FL Studio control for mixer, channel rack, playlist, piano roll, and easy custom shortcuts
+- `CTRL FL`: direct FL Studio control for mixer, channel rack, playlist, piano roll, and custom shortcuts
 - `PERFORM`: live sync mode for mutes, relaunches, and pattern switching
 
 ## Documentation
 
-- [English HTML guide](./Akai%20Fire%20EndGAme%20EN.html)
-- [French HTML guide](./Akai%20Fire%20EndGAme%20FR.html)
-- [French PDF guide](./Akai%20Fire%20EndGAme%20FR.pdf)
+- [English HTML guide](./Doc%202%20EndGAme%20EN.html)
+- [French HTML guide](./doc%202%20EndGAme%20FR.html)
+- [English PDF guide](./Doc%201%20EndGAme%20ENG.pdf)
+- [French PDF guide](./Doc%201%20EndGAme%20FR.pdf)
 
 ## Why this project
 
@@ -76,9 +77,10 @@ To work around this, the project includes sequence export/import support.
 |-- device_Fire.py
 |-- fl_control_editor.py
 |-- FLControlEditor.exe
-|-- Akai Fire EndGAme EN.html
-|-- Akai Fire EndGAme FR.html
-|-- Akai Fire EndGAme FR.pdf
+|-- Doc 1 EndGAme ENG.pdf
+|-- Doc 1 EndGAme FR.pdf
+|-- Doc 2 EndGAme EN.html
+|-- doc 2 EndGAme FR.html
 `-- fire_modules/
 ```
 
