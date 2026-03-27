@@ -12,7 +12,7 @@ This project rethinks the Fire around 4 main modes:
 
 - `STEP`: classic `1x64` sequencing plus vertical `MONO`, `POLY`, and `POLY CHORD` modes
 - `NOTE`: chromatic keyboard with optional automatic chord playback
-- `CTRL FL`: direct FL Studio control for mixer, channel rack, playlist, piano roll, and custom shortcuts
+- `FL Control`: direct FL Studio control for mixer, channel rack, playlist, piano roll, and custom shortcuts
 - `PERFORM`: live sync mode for mutes, relaunches, and pattern switching
 
 ## Documentation
