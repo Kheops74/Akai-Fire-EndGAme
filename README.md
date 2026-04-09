@@ -1,4 +1,4 @@
-# Akai Fire EndGAme
+# Akai Fire EndGAme V1.1
 
 ![FL Studio](https://img.shields.io/badge/FL%20Studio-Hardware%20Script-orange)
 ![Akai Fire](https://img.shields.io/badge/Akai-Fire-cc5500)
