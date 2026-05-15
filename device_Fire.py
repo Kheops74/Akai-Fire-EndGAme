@@ -1,4 +1,4 @@
-﻿#   name=Akai Fire EndGAme
+﻿#   name=Akai Fire EndGAme v1.2
 # url=https://forum.image-line.com/viewtopic.php?p=1496543#p1496543
 # receiveFrom=Akai Fire EndGAme
 # version 2026.2 - Modularisé
@@ -74,8 +74,10 @@ class TFire():
         self.BrowserMode = False # True when "browser" is enabled
         self.BrowserShouldClose = False
         self.BrowserShouldAutoHide = False # to restore the state of the browser when exiting browser mode
-        self.JogWheelPushed = False # True when holding down the jogwheel
-        self.JogWheelHeldTime = 0.0 # time (number of idle calls) during which the Jog button was held
+        self.JogWheelPushed = False
+        self.DrumBtnHeld = False
+        self.DrumBtnHoldTime = 0
+        self.JogWheelHeldTime = 0.0
         self.GridBtnHeldTime = 0 # time (number of idle calls) during which the grid buttons were held
         self.GridBtnHeldTriggerTime = 0 # time before it retriggers the same action (reduces the more you hold)
         self.GridUpBtnHeld = False
@@ -180,6 +182,8 @@ class TFire():
         self.AltHeld = False
         self.OverviewMode = False
         self.JogWheelPushed = False
+        self.DrumBtnHeld = False
+        self.DrumBtnHoldTime = 0
         self.JogWheelHeldTime = 0
         self.BrowserMode = False
         self.BrowserShouldClose = False
@@ -521,11 +525,8 @@ class TFire():
 
         if self.CurrentMode == ModePerf:
             self.perf_mode_handler.OnIdle()
-            # Refresh blink for pending pads and Play & Stop (any source)
-            hasAny = any(len(d) > 0 for d in self.perf_mode_handler.PendingPerSource.values()) or \
-                     any(len(d) > 0 for d in self.perf_mode_handler.PlayAndStopPerSource.values()) or \
-                     self.perf_mode_handler._pendingPattern >= 0
-            if hasAny:
+            # Refresh blink for pending pads and Play & Stop
+            if len(self.perf_mode_handler.PendingChanges) > 0 or len(self.perf_mode_handler.PlayAndStop) > 0:
                 self.perf_mode_handler.Refresh()
 
         if self.CurrentMode == ModeChordSelect:
@@ -1651,11 +1652,19 @@ class TFire():
                             self.ShowCurrentPadMode()
 
                 elif event.data1 == IDDrum:
+                    self.DrumBtnHeld = event.midiId == MIDI_NOTEON
+                    if event.midiId == MIDI_NOTEOFF:
+                        self.DrumBtnHoldTime = 0
+
                     if (event.midiId == MIDI_NOTEON):
                         self.LayoutSelectionMode = False
                         if not self.ShiftHeld:
-                            self.CurrentMode = ModeDrum
-                            self.ShowCurrentPadMode()
+                            if self.CurrentMode == ModeDrum:
+                                if hasattr(self, 'fl_control_handler'):
+                                    self.fl_control_handler.ToggleColorMode()
+                            else:
+                                self.CurrentMode = ModeDrum
+                                self.ShowCurrentPadMode()
                         else:
                             transport.globalTransport(FPT_TapTempo, 1)
 
@@ -2419,7 +2428,14 @@ class TFire():
             self.SendCC(IDStepSeq, DualColorFull1)  # red for classic StepSeq
         else:
             self.SendCC(IDStepSeq, self.BtnT[IdxStepSeq] * SingleColorFull)
-        self.SendCC(IDDrum, self.BtnT[IdxDrum] * SingleColorFull)
+            
+        if self.BtnT[IdxDrum]:
+            # NativeColorMode in FL Control Mode gives Red (DualColorFull1), else Orange (DualColorFull2)
+            drum_color = DualColorFull1 if (hasattr(self, 'fl_control_handler') and self.fl_control_handler.NativeColorMode) else DualColorFull2
+            self.SendCC(IDDrum, drum_color)
+        else:
+            self.SendCC(IDDrum, SingleColorOff)
+            
         self.SendCC(IDPerform, self.BtnT[IdxPerform] * SingleColorFull)
 
         if False:
