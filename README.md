@@ -7,6 +7,7 @@
 ![Docs](https://img.shields.io/badge/Docs-FR%20%2F%20EN-2f855a)
 
 A full custom Akai Fire script for FL Studio focused on workflow speed, vertical sequencing, live performance control, and deep FL Studio shortcut integration.
+Goodbye keyboard, everything's on fire !!
 
 This project rethinks the Fire around 4 main modes:
 
@@ -17,8 +18,6 @@ This project rethinks the Fire around 4 main modes:
 
 ## Documentation
 
-- [English HTML guide](./Doc%202%20EndGAme%20EN.html)
-- [French HTML guide](./doc%202%20EndGAme%20FR.html)
 - [English PDF guide](./Doc%201%20EndGAme%20ENG.pdf)
 - [French PDF guide](./Doc%201%20EndGAme%20FR.pdf)
 
