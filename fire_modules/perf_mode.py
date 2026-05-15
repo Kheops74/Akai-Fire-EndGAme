@@ -48,10 +48,10 @@ class PerfMode(FireModeBase):
     def __init__(self, fire_device):
         super().__init__(fire_device)
         self.SyncBarsIndex = 0      # index into SYNC_OPTIONS (0=1bar, 1=2bars, etc.)
-        self.SourceMode = SRC_MIXER  # 0=Mixer, 1=ChannelRack, 2=Playlist, 3=Pattern
-        self.PadOffsetPerSource = {SRC_MIXER: 0, SRC_CHANNEL: 0, SRC_PLAYLIST: 0, SRC_PATTERN: 0}
-        self.PendingPerSource = {SRC_MIXER: {}, SRC_CHANNEL: {}, SRC_PLAYLIST: {}, SRC_PATTERN: {}}
-        self.PlayAndStopPerSource = {SRC_MIXER: {}, SRC_CHANNEL: {}, SRC_PLAYLIST: {}, SRC_PATTERN: {}}
+        self.SourceMode = SRC_MIXER  # 0=Mixer, 1=ChannelRack, 2=Playlist
+        self.PadOffset = 0           # for navigating beyond 64 (Grid L/R)
+        self.PendingChanges = {}     # {element_index: target_mute_state (True=muted)}
+        self.PlayAndStop = {}        # {element_index: {'state': 'waiting'|'playing', 'ticks_target': N, 'ticks_elapsed': 0, 'original_muted': bool}}
         self.BlinkCounter = 0        # counter for blink animation
         self._wasPlaying = False     # track play state transitions
         self._lastSongPos = 0       # previous songPos to detect wrap-around
@@ -64,97 +64,76 @@ class PerfMode(FireModeBase):
     def SyncBars(self):
         return SYNC_OPTIONS[self.SyncBarsIndex]
 
-    @property
-    def PadOffset(self):
-        return self.PadOffsetPerSource[self.SourceMode]
-
-    @PadOffset.setter
-    def PadOffset(self, value):
-        self.PadOffsetPerSource[self.SourceMode] = value
-
-    @property
-    def PendingChanges(self):
-        return self.PendingPerSource[self.SourceMode]
-
-    @property
-    def PlayAndStop(self):
-        return self.PlayAndStopPerSource[self.SourceMode]
-
     # ==========================
     # Element count & state
     # ==========================
 
-    def _GetElementCount(self, source=None):
-        """Return total number of elements for given source (default: current)."""
-        src = source if source is not None else self.SourceMode
-        if src == SRC_MIXER:
+    def _GetElementCount(self):
+        """Return total number of elements for current source."""
+        if self.SourceMode == SRC_MIXER:
             return mixer.trackCount() - 1  # exclude master track (index 0)
-        elif src == SRC_CHANNEL:
+        elif self.SourceMode == SRC_CHANNEL:
             return channels.channelCount()
-        elif src == SRC_PLAYLIST:
+        elif self.SourceMode == SRC_PLAYLIST:
             return playlist.trackCount()
-        elif src == SRC_PATTERN:
+        elif self.SourceMode == SRC_PATTERN:
             return patterns.patternCount()
         return 0
 
-    def _IsElementMuted(self, index, source=None):
+    def _IsElementMuted(self, index):
         """Return True if element at index is muted."""
-        src = source if source is not None else self.SourceMode
         try:
-            if src == SRC_MIXER:
+            if self.SourceMode == SRC_MIXER:
                 return mixer.isTrackMuted(index + 1)  # mixer tracks are 1-indexed
-            elif src == SRC_CHANNEL:
+            elif self.SourceMode == SRC_CHANNEL:
                 return channels.isChannelMuted(index)
-            elif src == SRC_PLAYLIST:
+            elif self.SourceMode == SRC_PLAYLIST:
                 return playlist.isTrackMuted(index + 1)  # playlist tracks are 1-indexed
-            elif src == SRC_PATTERN:
+            elif self.SourceMode == SRC_PATTERN:
                 return (index + 1) != patterns.patternNumber()
         except:
             return False
         return False
 
-    def _MuteElement(self, index, source=None):
+    def _MuteElement(self, index):
         """Toggle mute on element at index."""
-        src = source if source is not None else self.SourceMode
         try:
-            if src == SRC_MIXER:
+            if self.SourceMode == SRC_MIXER:
                 mixer.muteTrack(index + 1)  # 1-indexed
-            elif src == SRC_CHANNEL:
+            elif self.SourceMode == SRC_CHANNEL:
                 channels.muteChannel(index)
-            elif src == SRC_PLAYLIST:
+            elif self.SourceMode == SRC_PLAYLIST:
                 playlist.muteTrack(index + 1)  # 1-indexed
-            elif src == SRC_PATTERN:
+            elif self.SourceMode == SRC_PATTERN:
                 patterns.jumpToPattern(index + 1)  # 1-indexed
         except Exception as e:
             print('PerfMode mute error: ' + str(e))
 
-    def _GetElementColor(self, index, source=None):
+    def _GetElementColor(self, index):
         """Get the native FL Studio color for the element."""
-        src = source if source is not None else self.SourceMode
         try:
-            if src == SRC_MIXER:
+            if self.SourceMode == SRC_MIXER:
                 return mixer.getTrackColor(index + 1)  # 1-indexed
-            elif src == SRC_CHANNEL:
+            elif self.SourceMode == SRC_CHANNEL:
                 return channels.getChannelColor(index)
-            elif src == SRC_PLAYLIST:
+            elif self.SourceMode == SRC_PLAYLIST:
                 return playlist.getTrackColor(index + 1)  # 1-indexed
-            elif src == SRC_PATTERN:
+            elif self.SourceMode == SRC_PATTERN:
                 return patterns.getPatternColor(index + 1)  # 1-indexed
         except:
             return COL_DEFAULT_ON
         return COL_DEFAULT_ON
 
-    def _GetElementName(self, index, source=None):
+    def _GetElementName(self, index):
         """Get the name of the element."""
-        src = source if source is not None else self.SourceMode
         try:
-            if src == SRC_MIXER:
+            if self.SourceMode == SRC_MIXER:
                 return mixer.getTrackName(index + 1)
-            elif src == SRC_CHANNEL:
+            elif self.SourceMode == SRC_CHANNEL:
                 return channels.getChannelName(index)
-            elif src == SRC_PLAYLIST:
+            elif self.SourceMode == SRC_PLAYLIST:
                 return playlist.getTrackName(index + 1)
-            elif src == SRC_PATTERN:
+            elif self.SourceMode == SRC_PATTERN:
                 return patterns.getPatternName(index + 1)
         except:
             return '?'
@@ -306,7 +285,15 @@ class PerfMode(FireModeBase):
 
     def OnJogPush(self):
         """Toggle source mode: Mixer -> ChannelRack -> Playlist -> Pattern -> Mixer."""
+        # Cancel all Play & Stop (restore original states before switching source)
+        for elemIdx, info in list(self.PlayAndStop.items()):
+            if info['state'] == 'playing':
+                self._MuteElement(elemIdx)
+        self.PlayAndStop.clear()
         self.SourceMode = (self.SourceMode + 1) % 4
+        self.PendingChanges.clear()
+        self._pendingPattern = -1
+        self.PadOffset = 0
         self.fire.ClearBtnMap()
         self.fire.DisplayTimedText('Perf: ' + SRC_NAMES[self.SourceMode])
         self.Refresh()
@@ -327,9 +314,14 @@ class PerfMode(FireModeBase):
             self._lastSongPos = transport.getSongPos(SONGLENGTH_ABSTICKS)
             self._lastBoundaryIdx = 0
         elif not playing and self._wasPlaying:
-            # Just stopped: apply all pending changes and cancel all P&S for ALL sources
-            self._ApplyAllPending()
-            self._CancelAllPlayAndStop()
+            # Just stopped: apply any pending changes immediately
+            if len(self.PendingChanges) > 0:
+                self._ApplyPendingChanges()
+            # Cancel all Play & Stop (restore original states)
+            for elemIdx, info in list(self.PlayAndStop.items()):
+                if info['state'] == 'playing':
+                    self._MuteElement(elemIdx)
+            self.PlayAndStop.clear()
             self.Refresh()
         self._wasPlaying = playing
 
@@ -369,12 +361,13 @@ class PerfMode(FireModeBase):
 
                 boundaryChanged = (boundaryIdx != self._lastBoundaryIdx) or (songPos < self._lastSongPos)
 
-                # Apply pending changes for ALL sources at boundary
-                if boundaryChanged:
-                    self._ApplyAllPending()
+                hasPending = len(self.PendingChanges) > 0 or self._pendingPattern >= 0
+                if hasPending and boundaryChanged:
+                    self._ApplyPendingChanges()
 
-                # Play & Stop logic for ALL sources: tick-based
-                self._ProcessAllPlayAndStop(songPos)
+                # Play & Stop logic: tick-based, independent of boundary
+                if len(self.PlayAndStop) > 0:
+                    self._ProcessPlayAndStop(songPos)
 
                 self._lastBoundaryIdx = boundaryIdx
 
@@ -382,75 +375,56 @@ class PerfMode(FireModeBase):
         except Exception as e:
             print('PerfMode sync error: ' + str(e))
 
-    def _ApplyAllPending(self):
-        """Apply pending mute/unmute changes for ALL sources."""
-        applied = False
-        # Pattern pending (global)
-        if self._pendingPattern >= 0:
+    def _ApplyPendingChanges(self):
+        """Apply all pending mute/unmute changes (or pattern switch)."""
+        if self.SourceMode == SRC_PATTERN and self._pendingPattern >= 0:
             patterns.jumpToPattern(self._pendingPattern)
             self._pendingPattern = -1
-            applied = True
-        # Pending changes per source
-        for src in range(4):
-            pending = self.PendingPerSource[src]
-            if len(pending) > 0:
-                for elementIndex, targetMuted in list(pending.items()):
-                    currentMuted = self._IsElementMuted(elementIndex, src)
-                    if currentMuted != targetMuted:
-                        self._MuteElement(elementIndex, src)
-                pending.clear()
-                applied = True
-        if applied:
+        else:
+            for elementIndex, targetMuted in list(self.PendingChanges.items()):
+                currentMuted = self._IsElementMuted(elementIndex)
+                if currentMuted != targetMuted:
+                    self._MuteElement(elementIndex)
+            self.PendingChanges.clear()
+        self.Refresh()
+
+    def _ProcessPlayAndStop(self, songPos):
+        """Process Play & Stop entries using absolute tick counting.
+        Each entry tracks its own elapsed ticks. When ticks_target reached:
+        - waiting -> toggle element, reset counter, switch to playing
+        - playing -> re-toggle element, remove entry."""
+        toRemove = []
+        for elemIdx, info in list(self.PlayAndStop.items()):
+            # Calculate ticks elapsed since last check
+            lastPos = info['last_songpos']
+            if songPos >= lastPos:
+                delta = songPos - lastPos
+            else:
+                # Song/pattern looped: estimate delta from pattern length
+                try:
+                    ppq = general.getRecPPQ()
+                    patLenBeats = patterns.getPatternLength(patterns.patternNumber())
+                    patLenTicks = patLenBeats * ppq if patLenBeats > 0 else ppq * 4
+                except:
+                    patLenTicks = info['ticks_target']
+                delta = (patLenTicks - lastPos) + songPos
+            info['last_songpos'] = songPos
+            info['ticks_elapsed'] += delta
+
+            if info['ticks_elapsed'] >= info['ticks_target']:
+                if info['state'] == 'waiting':
+                    # Time to toggle the element
+                    self._MuteElement(elemIdx)
+                    info['state'] = 'playing'
+                    info['ticks_elapsed'] = 0
+                elif info['state'] == 'playing':
+                    # Time's up: re-toggle to restore original state
+                    self._MuteElement(elemIdx)
+                    toRemove.append(elemIdx)
+        for elemIdx in toRemove:
+            del self.PlayAndStop[elemIdx]
+        if len(toRemove) > 0:
             self.Refresh()
-
-    def _ProcessAllPlayAndStop(self, songPos):
-        """Process Play & Stop entries for ALL sources using absolute tick counting."""
-        anyRemoved = False
-        for src in range(4):
-            psDict = self.PlayAndStopPerSource[src]
-            if len(psDict) == 0:
-                continue
-            toRemove = []
-            for elemIdx, info in list(psDict.items()):
-                # Calculate ticks elapsed since last check
-                lastPos = info['last_songpos']
-                if songPos >= lastPos:
-                    delta = songPos - lastPos
-                else:
-                    # Song/pattern looped: estimate delta from pattern length
-                    try:
-                        ppq = general.getRecPPQ()
-                        patLenBeats = patterns.getPatternLength(patterns.patternNumber())
-                        patLenTicks = patLenBeats * ppq if patLenBeats > 0 else ppq * 4
-                    except:
-                        patLenTicks = info['ticks_target']
-                    delta = (patLenTicks - lastPos) + songPos
-                info['last_songpos'] = songPos
-                info['ticks_elapsed'] += delta
-
-                if info['ticks_elapsed'] >= info['ticks_target']:
-                    if info['state'] == 'waiting':
-                        self._MuteElement(elemIdx, src)
-                        info['state'] = 'playing'
-                        info['ticks_elapsed'] = 0
-                    elif info['state'] == 'playing':
-                        self._MuteElement(elemIdx, src)
-                        toRemove.append(elemIdx)
-            for elemIdx in toRemove:
-                del psDict[elemIdx]
-            if len(toRemove) > 0:
-                anyRemoved = True
-        if anyRemoved:
-            self.Refresh()
-
-    def _CancelAllPlayAndStop(self):
-        """Cancel all Play & Stop entries for ALL sources, restoring original states."""
-        for src in range(4):
-            psDict = self.PlayAndStopPerSource[src]
-            for elemIdx, info in list(psDict.items()):
-                if info['state'] == 'playing':
-                    self._MuteElement(elemIdx, src)
-            psDict.clear()
 
     # ==========================
     # Refresh LEDs
@@ -535,14 +509,10 @@ class PerfMode(FireModeBase):
             screen.unBlank(True)
             self.fire.SendMessageToDevice(MsgIDSetRGBPadLedState, len(dataOut), dataOut)
 
-        # Mute buttons: light up current source, blink if other source has pending/P&S
-        blinkOn = self.BlinkCounter < BLINK_SPEED
+        # Mute buttons: light up current source button
         for i in range(4):
             if i == self.SourceMode:
                 self.fire.SendCC(IDMute1 + i, SingleColorFull)
-            elif len(self.PendingPerSource[i]) > 0 or len(self.PlayAndStopPerSource[i]) > 0:
-                # Non-active source with pending actions: blink
-                self.fire.SendCC(IDMute1 + i, SingleColorFull if blinkOn else SingleColorOff)
             else:
                 self.fire.SendCC(IDMute1 + i, SingleColorOff)
 
@@ -571,9 +541,8 @@ class PerfMode(FireModeBase):
 
     def OnActivate(self):
         """Called when Performance mode becomes active."""
-        for src in range(4):
-            self.PendingPerSource[src].clear()
-            self.PlayAndStopPerSource[src].clear()
+        self.PendingChanges.clear()
+        self.PlayAndStop.clear()
         self._pendingPattern = -1
         self.BlinkCounter = 0
         self._lastBoundaryIdx = 0
@@ -588,10 +557,15 @@ class PerfMode(FireModeBase):
 
     def OnDeactivate(self):
         """Called when leaving Performance mode."""
-        # Apply all pending changes for ALL sources
-        self._ApplyAllPending()
-        # Cancel all Play & Stop for ALL sources (restore original states)
-        self._CancelAllPlayAndStop()
+        # Apply any pending changes immediately
+        if len(self.PendingChanges) > 0 or self._pendingPattern >= 0:
+            self._ApplyPendingChanges()
+        # Cancel all Play & Stop (restore original states)
+        for elemIdx, info in list(self.PlayAndStop.items()):
+            if info['state'] == 'playing':
+                # Currently toggled: re-toggle to restore
+                self._MuteElement(elemIdx)
+        self.PlayAndStop.clear()
         # Reset source LEDs
         for i in range(4):
             self.fire.SendCC(IDTrackSel1 + i, SingleColorOff)

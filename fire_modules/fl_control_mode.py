@@ -171,8 +171,8 @@ def _NormalizeFixedSendKeys(entries):
     return result
 
 # Colors (0xRRGGBB)
-COL_MIXER_ON = 0x00FF00       # green = track unmuted (active)
-COL_MIXER_OFF = 0x003300      # dim green = track muted
+COL_MIXER_ON = 0x008800       # dim green = track unmuted (active)
+COL_MIXER_OFF = 0x001500      # very dim green = track muted
 COL_MIXER_SEL = 0x00FF88      # bright green-cyan = selected mixer track
 COL_CHAN_ON = 0xFF8800        # orange vif = channel unmuted
 COL_CHAN_OFF = 0x331100        # dim orange = channel muted
@@ -206,6 +206,35 @@ class FLControlMode(FireModeBase):
         self._row0Page = 0            # 0 = pistes 1-16, 1 = pistes 17-32
         self._row2Page = 0            # 0 = page A, 1 = page B
         self._row3Page = 0            # 0 = page A, 1 = page B
+        self.NativeColorMode = False  # Toggle pour les couleurs FL natives
+
+    def ToggleColorMode(self):
+        """Toggle between default colors and native FL Studio colors."""
+        self.NativeColorMode = not self.NativeColorMode
+        mode_str = "FL Colors" if self.NativeColorMode else "Default Colors"
+        self.fire.DisplayTimedText("FL Control: " + mode_str)
+        self.Refresh()
+        self.fire.RefreshButtons()
+
+    def _BoostColor(self, color):
+        """Boost saturation/brightness of an FL color."""
+        h, s, v = utils.RGBToHSVColor(color)
+        boosted, h, s, v = self.fire.ScaleColor(1.0, h, s, v)
+        return boosted
+
+    def _DimColor(self, color, factor):
+        """Dim a 0xRRGGBB color by factor (0.0-1.0)."""
+        r = int(((color >> 16) & 0xFF) * factor)
+        g = int(((color >> 8) & 0xFF) * factor)
+        b = int((color & 0xFF) * factor)
+        return (r << 16) | (g << 8) | b
+
+    def _IsColorDefault(self, color):
+        """Check if an FL Studio color is the default grey/uncolored by checking saturation."""
+        h, s, v = utils.RGBToHSVColor(color)
+        # Default FL Studio colors (Mixer, Channel, Pattern) are usually grayish
+        # with very low saturation (< 0.2)
+        return s < 0.20
 
     # ==========================
     # Tool list helpers
@@ -641,9 +670,16 @@ class FLControlMode(FireModeBase):
                 return COL_OFF
             if track == mixer.trackNumber():
                 return COL_MIXER_SEL
+                
+            native_color = mixer.getTrackColor(track) if self.NativeColorMode else COL_MIXER_ON
+            use_native = self.NativeColorMode and not self._IsColorDefault(native_color)
+            
+            base_color = self._BoostColor(native_color) if use_native else COL_MIXER_ON
+            muted_color = self._DimColor(base_color, 0.35) if use_native else COL_MIXER_OFF
+            
             if mixer.isTrackMuted(track):
-                return COL_MIXER_OFF
-            return COL_MIXER_ON
+                return muted_color
+            return base_color
 
         elif func == FLC_CHAN_RACK:
             ch = self._row0Page * 16 + idx
@@ -651,19 +687,36 @@ class FLControlMode(FireModeBase):
                 return COL_OFF
             if ch == channels.channelNumber():
                 return COL_CHAN_SEL
+                
+            native_color = channels.getChannelColor(ch) if self.NativeColorMode else COL_CHAN_ON
+            use_native = self.NativeColorMode and not self._IsColorDefault(native_color)
+            
+            base_color = self._BoostColor(native_color) if use_native else COL_CHAN_ON
+            muted_color = self._DimColor(base_color, 0.35) if use_native else COL_CHAN_OFF
+            
             if channels.isChannelMuted(ch):
-                return COL_CHAN_OFF
-            return COL_CHAN_ON
+                return muted_color
+            return base_color
 
         elif func == FLC_PATTERN_SEL:
             pat = idx + 1
             curPat = patterns.patternNumber()
-            if pat == curPat:
-                return COL_PAT_ACTIVE
-            elif pat <= patterns.patternCount():
-                return COL_PAT_EXIST
-            else:
+            
+            if pat > patterns.patternCount():
+                if pat == curPat:
+                    return COL_PAT_ACTIVE
                 return COL_PAT_EMPTY
+                
+            native_color = patterns.getPatternColor(pat) if self.NativeColorMode else COL_PAT_EXIST
+            
+            # The 'Default' Pattern color in FL Studio is usually 0x4D535E (a specific grey)
+            # If the user has NOT changed the pattern color, we will force use_native to False
+            use_native = self.NativeColorMode and native_color != 0x4D535E and not self._IsColorDefault(native_color)
+            
+            if pat == curPat:
+                return self._BoostColor(native_color) if use_native else COL_PAT_ACTIVE
+            else:
+                return self._DimColor(self._BoostColor(native_color), 0.5) if use_native else COL_PAT_EXIST
 
         elif func == FLC_PL_TOOL:
             tools = self._GetPLTools()

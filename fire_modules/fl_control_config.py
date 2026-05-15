@@ -20,7 +20,7 @@ ROW2_SHORTCUTS_A = [
     ('e', False, False, False, 'Select', 0xFFFF00),
     ('z', False, False, False, 'Zoom', 0xAA00FF),
     ('y', False, False, False, 'Playback', 0xFF4488),
-    ('', False, False, False, 'PL-A10', 0x220022),
+    ('', False, False, False, 'PL-A10', 0x000000),
 ]
 
 # ==========================================
@@ -36,7 +36,7 @@ ROW2_SHORTCUTS_B = [
     ('', False, False, False, 'PL-B7', 0x442200),
     ('', False, False, False, 'PL-B8', 0x442200),
     ('', False, False, False, 'PL-B9', 0x442200),
-    ('', False, False, False, 'PL-B10', 0x442200),
+    ('', False, False, False, 'PL-B10', 0x000000),
 ]
 
 # ==========================================
@@ -52,7 +52,7 @@ ROW3_SHORTCUTS_A = [
     ('e', False, False, False, 'Select', 0xFFFF00),
     ('z', False, False, False, 'Zoom', 0xAA00FF),
     ('y', False, False, False, 'Playback', 0xFF4488),
-    ('', False, False, False, 'PR-A10', 0x220022),
+    ('', False, False, False, 'PR-A10', 0x000000),
 ]
 
 # ==========================================
@@ -68,7 +68,7 @@ ROW3_SHORTCUTS_B = [
     ('', False, False, False, 'PR-B7', 0x442200),
     ('', False, False, False, 'PR-B8', 0x442200),
     ('', False, False, False, 'PR-B9', 0x442200),
-    ('', False, False, False, 'PR-B10', 0x442200),
+    ('', False, False, False, 'PR-B10', 0x000000),
 ]
 
 # ==========================================
@@ -77,10 +77,10 @@ ROW3_SHORTCUTS_B = [
 FIXED_SENDKEYS = {
     'row2_11': ('c', True, False, False, 'copie', 0xDF7000),
     'row2_12': ('v', True, False, False, 'paste', 0xBA772E),
-    'row2_13': ('x', True, False, False, 'cut', 0xC40000),
-    'row3_11': ('', True, False, False, 'ctrl', 0xFF8000),
-    'row3_12': ('', False, True, False, 'shift', 0xFD7E00),
-    'row3_13': ('', False, False, True, 'alt', 0x0000C6),
+    'row2_13': ('x', True, False, False, 'cut', 0x804040),
+    'row3_11': ('', True, False, False, 'ctrl', 0xFFFFFF),
+    'row3_12': ('', False, True, False, 'shift', 0xFFFFFF),
+    'row3_13': ('', False, False, True, 'alt', 0xFFFFFF),
 }
 
 # Pads API fixes, gardes dans le code principal:
