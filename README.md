@@ -18,8 +18,6 @@ This project rethinks the Fire around 4 main modes:
 
 ## Documentation
 
-- [English HTML guide](./Doc%202%20EndGAme%20EN.html)
-- [French HTML guide](./doc%202%20EndGAme%20FR.html)
 - [English PDF guide](./Doc%201%20EndGAme%20ENG.pdf)
 - [French PDF guide](./Doc%201%20EndGAme%20FR.pdf)
 
