@@ -93,7 +93,9 @@ Add these repository topics in GitHub settings for visibility:
 
 ## License
 
-MIT. See [LICENSE](./LICENSE).
+Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
+
+Copyright (c) 2026 Kheops74
 
 ## Status
 
