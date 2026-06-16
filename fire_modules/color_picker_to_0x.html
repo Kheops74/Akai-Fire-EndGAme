@@ -1,0 +1,172 @@
+
+<style>
+  .wrap { padding: 1rem 0; font-family: var(--font-sans); }
+  .picker-row { display: flex; align-items: center; gap: 16px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  input[type=color] { width: 64px; height: 64px; border-radius: 8px; border: 0.5px solid var(--color-border-tertiary); padding: 4px; cursor: pointer; background: none; }
+  .codes { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .code-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px 14px; border: 0.5px solid var(--color-border-tertiary); display: flex; flex-direction: column; gap: 4px; cursor: pointer; transition: background .15s; position: relative; }
+  .code-card:hover { background: var(--color-background-primary); }
+  .code-label { font-size: 11px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+  .code-value { font-family: var(--font-mono); font-size: 15px; font-weight: 500; color: var(--color-text-primary); word-break: break-all; }
+  .copy-badge { position: absolute; top: 8px; right: 10px; font-size: 10px; color: var(--color-text-secondary); opacity: 0; transition: opacity .2s; }
+  .code-card:hover .copy-badge { opacity: 1; }
+  .swatch-bar { height: 80px; border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); transition: background .1s; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; }
+  .swatch-label { font-family: var(--font-mono); font-size: 13px; opacity: .6; }
+  .palette-section { margin-top: 1.5rem; }
+  .palette-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+  .palette-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .swatch { width: 36px; height: 36px; border-radius: 6px; cursor: pointer; border: 0.5px solid rgba(0,0,0,.08); transition: transform .1s; flex-shrink: 0; }
+  .swatch:hover { transform: scale(1.15); }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--color-text-primary); color: var(--color-background-primary); font-size: 12px; padding: 8px 16px; border-radius: 6px; opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 999; white-space: nowrap; }
+  .toast.show { opacity: 1; }
+  .hist-section { margin-top: 1.5rem; }
+  .hist-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .hist-swatch { width: 24px; height: 24px; border-radius: 4px; border: 0.5px solid var(--color-border-tertiary); flex-shrink: 0; }
+  .hist-codes { font-family: var(--font-mono); font-size: 12px; color: var(--color-text-secondary); flex: 1; }
+  .hist-copy { font-size: 11px; color: var(--color-text-secondary); cursor: pointer; padding: 2px 8px; border-radius: 4px; border: 0.5px solid var(--color-border-tertiary); background: none; }
+  .hist-copy:hover { background: var(--color-background-secondary); }
+  h3 { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin: 0 0 10px; }
+</style>
+
+<div class="wrap">
+  <div class="picker-row">
+    <input type="color" id="picker" value="#FF6600">
+    <div>
+      <div style="font-size: 15px; font-weight: 500; color: var(--color-text-primary);">Sélecteur de couleur</div>
+      <div style="font-size: 13px; color: var(--color-text-secondary);">Cliquez sur une couleur → copiez le code</div>
+    </div>
+  </div>
+
+  <div class="swatch-bar" id="swatch-bar">
+    <span class="swatch-label" id="swatch-label">#FF6600</span>
+  </div>
+
+  <div class="codes">
+    <div class="code-card" id="c-0x" onclick="copyCode('0x')">
+      <span class="copy-badge">copier</span>
+      <span class="code-label">Python / script</span>
+      <span class="code-value" id="val-0x">0xFF6600</span>
+    </div>
+    <div class="code-card" id="c-hex" onclick="copyCode('hex')">
+      <span class="copy-badge">copier</span>
+      <span class="code-label">CSS hex</span>
+      <span class="code-value" id="val-hex">#FF6600</span>
+    </div>
+    <div class="code-card" id="c-rgb" onclick="copyCode('rgb')">
+      <span class="copy-badge">copier</span>
+      <span class="code-label">RGB</span>
+      <span class="code-value" id="val-rgb">rgb(255, 102, 0)</span>
+    </div>
+    <div class="code-card" id="c-int" onclick="copyCode('int')">
+      <span class="copy-badge">copier</span>
+      <span class="code-label">Entier décimal</span>
+      <span class="code-value" id="val-int">16737792</span>
+    </div>
+  </div>
+
+  <div class="palette-section">
+    <div class="palette-label">Couleurs rapides</div>
+    <div class="palette-grid" id="palette"></div>
+  </div>
+
+  <div class="hist-section" id="hist-section" style="display:none">
+    <h3>Historique</h3>
+    <div id="hist-list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PRESETS = [
+  '#FF6600','#FF8800','#FF0044','#FFFF00','#00CCCC',
+  '#AA00FF','#0066FF','#CCCCCC','#00FF44','#00AACC',
+  '#FF3300','#33FF00','#FF00AA','#00AAFF','#FFAA00',
+  '#FFFFFF','#888888','#000000','#FF4488','#44FFCC',
+];
+
+const picker = document.getElementById('picker');
+const swatchBar = document.getElementById('swatch-bar');
+const swatchLabel = document.getElementById('swatch-label');
+let history = [];
+
+function hexToNum(hex) {
+  return parseInt(hex.replace('#',''), 16);
+}
+
+function update(hex) {
+  const h = hex.toUpperCase();
+  const num = hexToNum(h);
+  const r = (num >> 16) & 0xFF;
+  const g = (num >> 8) & 0xFF;
+  const b = num & 0xFF;
+
+  swatchBar.style.background = h;
+  swatchLabel.textContent = h;
+  swatchLabel.style.color = (0.299*r+0.587*g+0.114*b)/255 > 0.55 ? '#000' : '#fff';
+
+  document.getElementById('val-0x').textContent = '0x' + num.toString(16).toUpperCase().padStart(6,'0');
+  document.getElementById('val-hex').textContent = h;
+  document.getElementById('val-rgb').textContent = `rgb(${r}, ${g}, ${b})`;
+  document.getElementById('val-int').textContent = num;
+}
+
+function copyCode(type) {
+  const vals = {
+    '0x': document.getElementById('val-0x').textContent,
+    'hex': document.getElementById('val-hex').textContent,
+    'rgb': document.getElementById('val-rgb').textContent,
+    'int': document.getElementById('val-int').textContent,
+  };
+  const text = vals[type];
+  navigator.clipboard.writeText(text).catch(()=>{});
+  showToast(`${text} copié !`);
+
+  const hex = picker.value.toUpperCase();
+  if (!history.find(h => h.hex === hex)) {
+    history.unshift({ hex, val0x: vals['0x'], valHex: vals['hex'] });
+    if (history.length > 8) history.pop();
+    renderHistory();
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.classList.remove('show'), 1600);
+}
+
+function renderHistory() {
+  const hs = document.getElementById('hist-section');
+  const hl = document.getElementById('hist-list');
+  hs.style.display = history.length ? '' : 'none';
+  hl.innerHTML = history.map(h => `
+    <div class="hist-row">
+      <div class="hist-swatch" style="background:${h.hex}"></div>
+      <div class="hist-codes">${h.val0x} &nbsp;·&nbsp; ${h.valHex}</div>
+      <button class="hist-copy" onclick="setColor('${h.hex}')">utiliser</button>
+      <button class="hist-copy" onclick="navigator.clipboard.writeText('${h.val0x}');showToast('Copié !')">0x</button>
+    </div>
+  `).join('');
+}
+
+function setColor(hex) {
+  picker.value = hex;
+  update(hex);
+}
+
+const palette = document.getElementById('palette');
+PRESETS.forEach(hex => {
+  const s = document.createElement('div');
+  s.className = 'swatch';
+  s.style.background = hex;
+  s.title = hex;
+  s.onclick = () => setColor(hex);
+  palette.appendChild(s);
+});
+
+picker.addEventListener('input', () => update(picker.value));
+update(picker.value);
+</script>
