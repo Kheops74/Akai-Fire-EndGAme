@@ -1,5 +1,5 @@
 [README.md](https://github.com/user-attachments/files/29023867/README.md)
-# Akai Fire EndGAme V1.4
+# Akai Fire EndGAme V1.5
 
 ![FL Studio](https://img.shields.io/badge/FL%20Studio-Hardware%20Script-orange)
 ![Akai Fire](https://img.shields.io/badge/Akai-Fire-cc5500)
