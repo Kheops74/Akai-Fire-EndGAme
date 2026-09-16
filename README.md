@@ -10,6 +10,7 @@
 A full custom Akai Fire script for FL Studio focused on workflow speed, vertical sequencing, live performance control, and deep FL Studio shortcut integration.
 
 Work on FL Version < 25.2.4 and later
+Download the latest release V1.6 other code are obsolete
 
 This project rethinks the Fire around 4 main modes:
 
